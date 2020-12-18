@@ -50,8 +50,8 @@ type Orders struct {
 	List []Order
 }
 
-// ConnectDatabase ...
-func ConnectDatabase() *sql.DB {
+// Connect ...
+func Connect() *sql.DB {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable", host,
 		port, user, dbname)
@@ -101,8 +101,8 @@ func CreateOrderTable(db *sql.DB) {
 }
 
 // InsertDataToTable ...
-func InsertDataToTable(db *sql.DB, data map[string]string) {
-	sqlStatement := `INSERT INTO customers (name, street_number, street_name, city, state, sales_region)
+func InsertDataToTable(db *sql.DB, data map[string]string, tableName string) {
+	sqlStatement := `INSERT INTO ` + tableName + `(name, street_number, street_name, city, state, sales_region)
 			VALUES ($1, $2, $3, $4, $5, $6)`
 	_, err := db.Exec(sqlStatement, data["name"], data["street_number"], data["street_name"], data["city"], data["state"], data["sales_region"])
 	if err != nil {
