@@ -15,11 +15,6 @@ const (
 	dbname = "inventorymanager"
 )
 
-// Tables ...
-type Tables interface {
-	CreateCustomerTable()
-}
-
 // Customer ...
 type Customer struct {
 	ID           int
@@ -70,13 +65,13 @@ func Connect() *sql.DB {
 // CreateCustomerTable ...
 func CreateCustomerTable(db *sql.DB) {
 	sqlStatement := `CREATE TABLE IF NOT EXISTS customers (
-				customer_id 	serial		PRIMARY KEY,
-				name 		varchar(40) 	NOT NULL,
+				customer_id 	serial			PRIMARY KEY,
+				name 			varchar(40) 	NOT NULL,
 				street_number	varchar(40) 	NOT NULL,
-				street_name	varchar(40)	NOT NULL,
-				city		varchar(40)	NOT NULL,
-				state 		varchar(40)	NOT NULL,
-				sales_region	varchar(40)	NOT NULL
+				street_name		varchar(40)		NOT NULL,
+				city			varchar(40)		NOT NULL,
+				state 			varchar(40)		NOT NULL,
+				sales_region	varchar(40)		NOT NULL
 			)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
@@ -87,13 +82,30 @@ func CreateCustomerTable(db *sql.DB) {
 // CreateOrderTable ...
 func CreateOrderTable(db *sql.DB) {
 	sqlStatement := `CREATE TABLE IF NOT EXISTS orders (
-				order_id 	serial		PRIMARY KEY,
-				customer_id	int 		NOT NULL,
-				quantity 	int 		NOT NULL,
-				product 	varchar(15) 	NOT NULL,
-				total_price	float 		NOT NULL,
-				CONSTRAINT	fk_customer	FOREIGN KEY(customer_id)	REFERENCES customers(customer_id)
+				order_id 				serial			PRIMARY KEY,
+				customer_id				int 			NOT NULL,
+				item_id					int				NOT NULL,
+				item_price				float			NOT NULL,
+				quantity 				int 			NOT NULL,
+				item_name				varchar(15) 	NOT NULL,
+				total_price				float 			NOT NULL,
+				CONSTRAINT	fk_customer	FOREIGN KEY(customer_id)	REFERENCES customers(customer_id),
+				CONSTRAINT 	fk_item FOREIGN KEY(item_id)			REFERENCES inventory(item_id)
 			)`
+	_, err := db.Exec(sqlStatement)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// CreateInventoryTable ...
+func CreateInventoryTable(db *sql.DB) {
+	sqlStatement := `CREATE TABLE IF NOT EXISTS inventory (
+				item_id		serial 		PRIMARY KEY,
+				item_price	float		NOT NULL,
+				item_name	varchar(15)	NOT NULL,
+				quantity	int			NOT NULL
+	)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
 		log.Fatal(err)
