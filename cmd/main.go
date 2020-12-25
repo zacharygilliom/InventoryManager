@@ -1,11 +1,22 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+
 	database "github.com/zacharygilliom/InventoryManager/internal/models"
 )
 
+func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Hello World!\n")
+}
+
 func main() {
 	// Connect to our database and initialize our tables
+
+	http.HandleFunc("/", handler)
+
+	http.ListenAndServe(":8080", nil)
 
 	db := database.Connect()
 	defer db.Close()
