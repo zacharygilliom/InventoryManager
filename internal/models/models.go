@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -122,8 +123,9 @@ func InsertDataToTable(db *sql.DB, data map[string]string, tableName string) {
 	}
 }
 
-func getData(db *sql.DB) {
-	sqlStatement := `SELECT * FROM customers`
+// GetData ...
+func GetData(db *sql.DB, id string) {
+	sqlStatement := `SELECT * FROM customers WHERE customer_id = ` + id
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
 		log.Fatal(err)
@@ -138,7 +140,12 @@ func getData(db *sql.DB) {
 			log.Fatal(err)
 		}
 		cs.List = append(cs.List, c)
-		fmt.Println(c)
+		data, err := json.Marshal(c)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s\n", data)
+		//fmt.Println(c)
 	}
 	err = rows.Err()
 	if err != nil {
