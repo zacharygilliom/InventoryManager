@@ -1,39 +1,23 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	database "github.com/zacharygilliom/InventoryManager/internal/models"
+	"github.com/zacharygilliom/InventoryManager/internal/handlers"
+	"github.com/zacharygilliom/InventoryManager/internal/models"
 )
-
-// IDHandler ...
-func IDHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		cID := vars["id"]
-		w.WriteHeader(http.StatusOK)
-		database.GetData(db, cID)
-	}
-}
-
-//HomeHandle ...
-func HomeHandle(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello World\n")
-}
 
 func main() {
 	// Connect to our database and initialize our tables
-	db := database.Connect()
+	db := models.Connect()
 
 	defer db.Close()
 	//http.HandleFunc("/", HomeHandle)
 
-	database.CreateCustomerTable(db)
-	database.CreateInventoryTable(db)
-	database.CreateOrderTable(db)
+	models.CreateCustomerTable(db)
+	models.CreateInventoryTable(db)
+	models.CreateOrderTable(db)
 
 	// Test data to insert
 	insertData := make(map[string]string)
@@ -44,11 +28,10 @@ func main() {
 	insertData["city"] = "Youngstown"
 	insertData["state"] = "Ohio"
 	insertData["sales_region"] = "Central"
-	database.InsertDataToTable(db, insertData, tableName)
+	models.InsertDataToTable(db, insertData, tableName)
 
 	r := mux.NewRouter()
-	r.HandleFunc("/{id}", IDHandler(db)).Methods("GET")
-	r.HandleFunc("/", HomeHandle).Methods("GET")
+	r.HandleFunc("/{id}", handlers.ID(db)).Methods("GET")
 	http.ListenAndServe(":8080", r)
 
 }
