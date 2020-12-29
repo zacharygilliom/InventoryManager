@@ -46,6 +46,14 @@ type Orders struct {
 	List []Order
 }
 
+// Inventory ...
+type Inventory struct {
+	ID       int
+	Price    string
+	Name     string
+	Quantity int
+}
+
 // Connect ...
 func Connect() *sql.DB {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -105,7 +113,7 @@ func CreateInventoryTable(db *sql.DB) {
 				item_id		serial 		PRIMARY KEY,
 				item_price	float		NOT NULL,
 				item_name	varchar(15)	NOT NULL,
-				quantity	int			NOT NULL
+				quantity	int			NOT NULL 
 	)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
@@ -123,9 +131,9 @@ func InsertDataToTable(db *sql.DB, data map[string]string, tableName string) {
 	}
 }
 
-// GetData ...
-func GetData(db *sql.DB, id string) {
-	sqlStatement := `SELECT * FROM customers WHERE customer_id = ` + id
+// GetCustomerData ...
+func GetCustomerData(db *sql.DB, id string) {
+	sqlStatement := `SELECT * FROM customers WHERE customer_id =` + id
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
 		log.Fatal(err)
@@ -152,4 +160,43 @@ func GetData(db *sql.DB, id string) {
 		log.Fatal(err)
 	}
 
+}
+
+// GetInventoryData ...
+func GetInventoryData(db *sql.DB, id string) {
+	sqlStatement := `SELECT * FROM inventory WHERE item_id =` + id
+	rows, err := db.Query(sqlStatement)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i Inventory
+		err = rows.Scan(&i.ID, &i.Name, &i.Price, &i.Quantity)
+		if err != nil {
+			log.Fatal(err)
+		}
+		data, err := json.Marshal(i)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s\n", data)
+		//fmt.Println(c)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+//InsertDataToInventory ...
+func InsertDataToInventory(db *sql.DB, data map[string]interface{}) {
+	sqlStatement := `INSERT INTO inventory (item_name, item_price, quantity)
+			VALUES ($1, $2, $3)`
+	_, err := db.Exec(sqlStatement, data["item_name"], data["item_price"], data["quantity"])
+	if err != nil {
+		log.Fatal(err)
+	}
 }

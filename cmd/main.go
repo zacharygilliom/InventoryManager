@@ -29,7 +29,9 @@ func main() {
 	models.InsertDataToTable(db, insertData, tableName)
 
 	r := mux.NewRouter()
-	r.HandleFunc("/{id}", handlers.ID(db)).Methods("GET")
+	r.HandleFunc("/customer/{id}", handlers.CustomerID(db)).Methods("GET")
+	r.HandleFunc("/inventory/{id}", handlers.InventoryID(db)).Methods("GET")
+	r.HandleFunc("/inventory/add/{item}/{price}/{quantity}", handlers.InventoryAdd(db)).Methods("POST", "GET", "PUT")
 	http.ListenAndServe(":8080", r)
 
 }
