@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/zacharygilliom/InventoryManager/internal/cli"
 	"github.com/zacharygilliom/InventoryManager/internal/handlers"
 	"github.com/zacharygilliom/InventoryManager/internal/models"
 )
@@ -13,8 +12,6 @@ func main() {
 	// Connect to our database and initialize our tables
 	db := models.Connect()
 	defer db.Close()
-
-	cli.Initialize()
 
 	models.CreateCustomerTable(db)
 	models.CreateInventoryTable(db)
