@@ -34,11 +34,10 @@ type Customers struct {
 
 // Order ...
 type Order struct {
-	OrderID    int
+	ID         int
 	CustomerID int
 	Quantity   int
-	Product    string
-	TotalPrice float64
+	Price      float64
 }
 
 // Orders ...
@@ -48,10 +47,10 @@ type Orders struct {
 
 // Inventory ...
 type Inventory struct {
-	ID       int
-	Price    string
+	ItemID   int
 	Name     string
 	Quantity int
+	Price    string
 }
 
 // Connect ...
@@ -90,13 +89,10 @@ func CreateCustomerTable(db *sql.DB) {
 
 // CreateOrderTable ...
 func CreateOrderTable(db *sql.DB) {
-	sqlStatement := `CREATE TABLE IF NOT EXISTS orders (
+	sqlStatement := `CREATE TABLE IF NOT EXISTS order (
 				order_id 				serial			PRIMARY KEY,
 				customer_id				int 			NOT NULL,
-				item_id					int				NOT NULL,
-				item_price				float			NOT NULL,
 				quantity 				int 			NOT NULL,
-				item_name				varchar(15) 	NOT NULL,
 				total_price				float 			NOT NULL,
 				CONSTRAINT	fk_customer	FOREIGN KEY(customer_id)	REFERENCES customers(customer_id),
 				CONSTRAINT 	fk_item FOREIGN KEY(item_id)			REFERENCES inventory(item_id)
@@ -111,10 +107,37 @@ func CreateOrderTable(db *sql.DB) {
 func CreateInventoryTable(db *sql.DB) {
 	sqlStatement := `CREATE TABLE IF NOT EXISTS inventory (
 				item_id		serial 		PRIMARY KEY,
-				item_price	float		NOT NULL,
 				item_name	varchar(15)	NOT NULL,
-				quantity	int			NOT NULL 
+				quantity	int			NOT NULL,
+				price 		float		NOT NULL,
+			)`
+	_, err := db.Exec(sqlStatement)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+//CreateItemTable ...
+func CreateItemTable(db *sql.DB) {
+	sqlStatement := `CREATE TABLE IF NOT EXISTS item (
+				item_id	serial PRIMARY KEY,
+				name varchar(15) NOT NULL,
 	)`
+	_, err := db.Exec(sqlStatement)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// CreateOrderItemsTable ...
+func CreateOrderItemsTable(db *sql.DB) {
+	sqlStatement := `CREATE TABLE IF NOT EXISTS orderitems (
+				item_id int NOT NULL,
+				order_id int NOT NULL,
+				CONSTRAINT fk_item FOREIGN KEY(item_id) REFERENCES item(item_id),
+				CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES order(order_id),
+				PRIMARY KEY(item_id, order_id)
+		)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
 		log.Fatal(err)
