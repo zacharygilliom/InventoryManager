@@ -16,10 +16,11 @@ func main() {
 	models.CreateCustomerTable(db)
 	models.CreateInventoryTable(db)
 	models.CreateOrderTable(db)
+	models.CreateOrderItemsTable(db)
 
 	// Test data to insert
 	insertData := make(map[string]string)
-	tableName := "customers"
+	tableName := "customer"
 	insertData["name"] = "Smith&Smith"
 	insertData["street_number"] = "112"
 	insertData["street_name"] = "Main Street"

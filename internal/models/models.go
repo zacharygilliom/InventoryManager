@@ -40,6 +40,12 @@ type Order struct {
 	Price      float64
 }
 
+// Item ...
+type Item struct {
+	ID   int
+	name string
+}
+
 // Orders ...
 type Orders struct {
 	List []Order
@@ -72,7 +78,7 @@ func Connect() *sql.DB {
 
 // CreateCustomerTable ...
 func CreateCustomerTable(db *sql.DB) {
-	sqlStatement := `CREATE TABLE IF NOT EXISTS customers (
+	sqlStatement := `CREATE TABLE IF NOT EXISTS customer (
 				customer_id 	serial			PRIMARY KEY,
 				name 			varchar(40) 	NOT NULL,
 				street_number	varchar(40) 	NOT NULL,
@@ -89,13 +95,12 @@ func CreateCustomerTable(db *sql.DB) {
 
 // CreateOrderTable ...
 func CreateOrderTable(db *sql.DB) {
-	sqlStatement := `CREATE TABLE IF NOT EXISTS order (
-				order_id 				serial			PRIMARY KEY,
-				customer_id				int 			NOT NULL,
-				quantity 				int 			NOT NULL,
-				total_price				float 			NOT NULL,
-				CONSTRAINT	fk_customer	FOREIGN KEY(customer_id)	REFERENCES customers(customer_id),
-				CONSTRAINT 	fk_item FOREIGN KEY(item_id)			REFERENCES inventory(item_id)
+	sqlStatement := `CREATE TABLE IF NOT EXISTS orders (
+				order_id 			serial			PRIMARY KEY,
+				customer_id			int 			NOT NULL,
+				quantity 			int 			NOT NULL,
+				total_price			float 			NOT NULL,
+				CONSTRAINT	fk_customer	FOREIGN KEY(customer_id)	REFERENCES customer(customer_id)
 			)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
@@ -109,20 +114,8 @@ func CreateInventoryTable(db *sql.DB) {
 				item_id		serial 		PRIMARY KEY,
 				item_name	varchar(15)	NOT NULL,
 				quantity	int			NOT NULL,
-				price 		float		NOT NULL,
+				price 		float		NOT NULL
 			)`
-	_, err := db.Exec(sqlStatement)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-//CreateItemTable ...
-func CreateItemTable(db *sql.DB) {
-	sqlStatement := `CREATE TABLE IF NOT EXISTS item (
-				item_id	serial PRIMARY KEY,
-				name varchar(15) NOT NULL,
-	)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
 		log.Fatal(err)
@@ -132,10 +125,10 @@ func CreateItemTable(db *sql.DB) {
 // CreateOrderItemsTable ...
 func CreateOrderItemsTable(db *sql.DB) {
 	sqlStatement := `CREATE TABLE IF NOT EXISTS orderitems (
-				item_id int NOT NULL,
-				order_id int NOT NULL,
-				CONSTRAINT fk_item FOREIGN KEY(item_id) REFERENCES item(item_id),
-				CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES order(order_id),
+				item_id int,
+				order_id int,
+				CONSTRAINT fk_item FOREIGN KEY(item_id) REFERENCES inventory(item_id),
+				CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES orders(order_id),
 				PRIMARY KEY(item_id, order_id)
 		)`
 	_, err := db.Exec(sqlStatement)
@@ -156,7 +149,7 @@ func InsertDataToTable(db *sql.DB, data map[string]string, tableName string) {
 
 // GetCustomerData ...
 func GetCustomerData(db *sql.DB, id string) {
-	sqlStatement := `SELECT * FROM customers WHERE customer_id =` + id
+	sqlStatement := `SELECT * FROM customer WHERE customer_id =` + id
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
 		log.Fatal(err)
@@ -196,7 +189,7 @@ func GetInventoryData(db *sql.DB, id string) {
 
 	for rows.Next() {
 		var i Inventory
-		err = rows.Scan(&i.ID, &i.Name, &i.Price, &i.Quantity)
+		err = rows.Scan(&i.ItemID, &i.Name, &i.Price, &i.Quantity)
 		if err != nil {
 			log.Fatal(err)
 		}
