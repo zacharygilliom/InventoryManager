@@ -24,6 +24,7 @@ type Customer struct {
 	StreetName   string
 	City         string
 	State        string
+	Zip          string
 	SalesRegion  string
 }
 
@@ -81,11 +82,12 @@ func CreateCustomerTable(db *sql.DB) {
 	sqlStatement := `CREATE TABLE IF NOT EXISTS customer (
 				customer_id 	serial			PRIMARY KEY,
 				name 			varchar(40) 	NOT NULL,
-				street_number	varchar(40) 	NOT NULL,
-				street_name		varchar(40)		NOT NULL,
-				city			varchar(40)		NOT NULL,
-				state 			varchar(40)		NOT NULL,
-				sales_region	varchar(40)		NOT NULL
+				street_number	varchar(8) 		NOT NULL,
+				street_name		varchar(15)		NOT NULL,
+				city			varchar(15)		NOT NULL,
+				state 			varchar(2)		NOT NULL,
+				zip 			int				NOT NULL,
+				sales_region	varchar(12)		NOT NULL
 			)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
@@ -212,6 +214,16 @@ func InsertDataToInventory(db *sql.DB, data map[string]interface{}) {
 	sqlStatement := `INSERT INTO inventory (item_name, item_price, quantity)
 			VALUES ($1, $2, $3)`
 	_, err := db.Exec(sqlStatement, data["item_name"], data["item_price"], data["quantity"])
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// NewCustomer ...
+func NewCustomer(db *sql.DB, data map[string]interface{}) {
+	sqlStatement := `INSERT INTO customer (name, street_number, street_name, city, state, zip, sales_region)
+			VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	_, err := db.Exec(sqlStatement, data["name"], data["street_number"], data["street_name"], data["city"], data["state"], data["zip"], data["sales_region"])
 	if err != nil {
 		log.Fatal(err)
 	}

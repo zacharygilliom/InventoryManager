@@ -30,9 +30,10 @@ func main() {
 	models.InsertDataToTable(db, insertData, tableName)
 
 	r := mux.NewRouter()
+	r.HandleFunc("/customer/add/{name}/{street_number}/{street_name}/{city}/{state}/{zip}/{sales_region}", handlers.AddCustomer(db)).Methods("POST")
 	r.HandleFunc("/customer/{id}", handlers.CustomerID(db)).Methods("GET")
 	r.HandleFunc("/inventory/{id}", handlers.InventoryID(db)).Methods("GET")
-	r.HandleFunc("/inventory/add/{item}/{price}/{quantity}", handlers.InventoryAdd(db)).Methods("POST", "GET", "PUT")
+	r.HandleFunc("/inventory/add/{item}/{price}/{quantity}", handlers.InventoryAdd(db)).Methods("POST")
 	http.ListenAndServe(":8080", r)
 
 }

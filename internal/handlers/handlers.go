@@ -38,3 +38,20 @@ func InventoryAdd(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		models.InsertDataToInventory(db, data)
 	}
 }
+
+// AddCustomer ...
+func AddCustomer(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		w.WriteHeader(http.StatusOK)
+		data := make(map[string]interface{})
+		data["name"] = vars["name"]
+		data["street_number"] = vars["street_number"]
+		data["street_name"] = vars["street_name"]
+		data["city"] = vars["city"]
+		data["state"] = vars["state"]
+		data["zip"] = vars["zip"]
+		data["sales_region"] = vars["sales_region"]
+		models.NewCustomer(db, data)
+	}
+}
