@@ -17,20 +17,20 @@ func main() {
 	models.CreateInventoryTable(db)
 	models.CreateOrderTable(db)
 	models.CreateOrderItemsTable(db)
-
-	// Test data to insert
-	insertData := make(map[string]string)
-	tableName := "customer"
-	insertData["name"] = "Smith&Smith"
-	insertData["street_number"] = "112"
-	insertData["street_name"] = "Main Street"
-	insertData["city"] = "Youngstown"
-	insertData["state"] = "Ohio"
-	insertData["sales_region"] = "Central"
-	models.InsertDataToTable(db, insertData, tableName)
-
+	/*
+		// Test data to insert
+		insertData := make(map[string]string)
+		tableName := "customer"
+		insertData["name"] = "Smith&Smith"
+		insertData["street_number"] = "112"
+		insertData["street_name"] = "Main Street"
+		insertData["city"] = "Youngstown"
+		insertData["state"] = "Ohio"
+		insertData["sales_region"] = "Central"
+		models.InsertDataToTable(db, insertData, tableName)
+	*/
 	r := mux.NewRouter()
-	r.HandleFunc("/customer/add/{name}/{street_number}/{street_name}/{city}/{state}/{zip}/{sales_region}", handlers.AddCustomer(db)).Methods("POST")
+	r.HandleFunc("/customer/add/{name}/{street_number}/{street_name}/{city}/{state}/{zip}/{sales_region}", handlers.AddCustomer(db)).Methods("GET")
 	r.HandleFunc("/customer/{id}", handlers.CustomerID(db)).Methods("GET")
 	r.HandleFunc("/inventory/{id}", handlers.InventoryID(db)).Methods("GET")
 	r.HandleFunc("/inventory/add/{item}/{price}/{quantity}", handlers.InventoryAdd(db)).Methods("POST")

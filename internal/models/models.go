@@ -82,12 +82,12 @@ func CreateCustomerTable(db *sql.DB) {
 	sqlStatement := `CREATE TABLE IF NOT EXISTS customer (
 				customer_id 	serial			PRIMARY KEY,
 				name 			varchar(40) 	NOT NULL,
-				street_number	varchar(8) 		NOT NULL,
-				street_name		varchar(15)		NOT NULL,
-				city			varchar(15)		NOT NULL,
-				state 			varchar(2)		NOT NULL,
+				street_number	varchar(40)		NOT NULL,
+				street_name		varchar(40)		NOT NULL,
+				city			varchar(40)		NOT NULL,
+				state 			varchar(40)		NOT NULL,
 				zip 			int				NOT NULL,
-				sales_region	varchar(12)		NOT NULL
+				sales_region	varchar(40)		NOT NULL
 			)`
 	_, err := db.Exec(sqlStatement)
 	if err != nil {
@@ -127,8 +127,8 @@ func CreateInventoryTable(db *sql.DB) {
 // CreateOrderItemsTable ...
 func CreateOrderItemsTable(db *sql.DB) {
 	sqlStatement := `CREATE TABLE IF NOT EXISTS orderitems (
-				item_id int,
 				order_id int,
+				item_id int,
 				CONSTRAINT fk_item FOREIGN KEY(item_id) REFERENCES inventory(item_id),
 				CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES orders(order_id),
 				PRIMARY KEY(item_id, order_id)
